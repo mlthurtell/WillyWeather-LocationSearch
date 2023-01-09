@@ -6,11 +6,19 @@
   crossorigin="anonymous"
 />
 
+<title>WillyWeather - Location ID Search</title>
+</head>
+<body>
+
+<h1>WillyWeather Location Search Page</h1>
+<br>
+<p>Use your WillyWeather API key to search the WillyWeather database for locations. Use the Location ID in the to set up your location banks in the Garmin/Connect IQ <i>OzTides</i> application.</p>
+
 <!-- Use Bootstrap styling for the form and table -->
 <form id="form" class="form-inline">
   <label class="mr-sm-2" for="apiKey">API Key:</label>
   <input type="text" class="form-control mb-2 mr-sm-2" id="apiKey" />
-  <label class="mr-sm-2" for="searchQuery">Search Query:</label>
+  <label class="mr-sm-2" for="searchQuery">Location Name:</label>
   <input type="text" class="form-control mb-2 mr-sm-2" id="searchQuery" />
   <button type="submit" class="btn btn-primary mb-2">Submit</button>
 </form>
@@ -20,7 +28,7 @@
 <table id="resultsTable" class="table">
   <thead>
     <tr>
-      <th>ID</th>
+      <th>Location ID</th>
       <th>Name</th>
       <th>Region</th>
       <th>State</th>
