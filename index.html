@@ -1,32 +1,91 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>JSON Test</title>
-</head>
-<body>
-    <div id="myData"></div>
-    <script>
-        fetch('https://api.willyweather.com.au/v2/NmYwZmFkNjYyZWEzZmI0MTFjMjJjMT/search.json?query=beach&limit=2')
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (data) {
-                appendData(data);
-            })
-            .catch(function (err) {
-                console.log('error: ' + err);
-            });
-        function appendData(data) {
-            var mainContainer = document.getElementById("myData");
-            for (var i = 0; i < data.length; i++) {
-                var div = document.createElement("div");
-                div.innerHTML = 'Name: ' + data[i].firstName + ' ' + data[i].lastName;
-                mainContainer.appendChild(div);
-            }
-        }
-    </script>
-</body>
-</html>
+<!-- Add Bootstrap CSS -->
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+  integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+  crossorigin="anonymous"
+/>
+
+<!-- Use Bootstrap styling for the form and table -->
+<form id="form" class="form-inline">
+  <label class="mr-sm-2" for="apiKey">API Key:</label>
+  <input type="text" class="form-control mb-2 mr-sm-2" id="apiKey" />
+  <label class="mr-sm-2" for="searchQuery">Search Query:</label>
+  <input type="text" class="form-control mb-2 mr-sm-2" id="searchQuery" />
+  <button type="submit" class="btn btn-primary mb-2">Submit</button>
+</form>
+
+<br />
+
+<table id="resultsTable" class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Region</th>
+      <th>State</th>
+      <th>Postcode</th>
+      <th>Time Zone</th>
+      <th>Latitude</th>
+      <th>Longitude</th>
+      <th>Type ID</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<!-- Use Bootstrap styling for the loading animation -->
+<div class="d-flex justify-content-center">
+  <div id="loading" class="spinner-border" role="status" style="display: none">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+
+<!-- JavaScript to send the GET request and display the results -->
+<script>
+  // Send the GET request when the form is submitted
+  document.getElementById('form').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent the form from reloading the page
+
+    const resultsTable = document.getElementById('resultsTable').tBodies[0];
+    resultsTable.innerHTML = '';
+
+    // Display the loading animation
+    document.getElementById('loading').style.display = 'block';
+
+    // Get the API key and search query from the form
+    const apiKey = document.getElementById('apiKey').value;
+    const searchQuery = document.getElementById('searchQuery').value;
+
+    // Use a CORS proxy to avoid CORS issues
+    const corsProxy = '';
+    
+    // https://cors-anywhere.herokuapp.com/
+    // Send the GET request to the Willy Weather API
+    fetch(
+      corsProxy +
+        `https://api.willyweather.com.au/v2/${apiKey}/search.json?query=${searchQuery}`,
+    )
+      .then(response => response.json()) // Parse the response as JSON
+      .then(data => {
+        // Display the results in the table
+        console.log(data);
+        // Display the data in the table
+        data.forEach(item => {
+          const row = resultsTable.insertRow();
+          row.insertCell().innerHTML = item.id;
+          row.insertCell().innerHTML = item.name;
+          row.insertCell().innerHTML = item.region;
+          row.insertCell().innerHTML = item.state;
+          row.insertCell().innerHTML = item.postcode;
+          row.insertCell().innerHTML = item.timeZone;
+          row.insertCell().innerHTML = item.lat;
+          row.insertCell().innerHTML = item.lng;
+          row.insertCell().innerHTML = item.typeId;
+        });
+
+        // Hide the loading animation
+        document.getElementById('loading').style.display = 'none';
+      });
+  });
+</script>
