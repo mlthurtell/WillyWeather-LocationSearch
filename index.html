@@ -42,7 +42,7 @@
 </div>
 
 <!-- JavaScript to send the GET request and display the results -->
-<script crossorigin="anonymous">
+<script>
   // Send the GET request when the form is submitted
   document.getElementById('form').addEventListener('submit', function (event) {
     event.preventDefault(); // Prevent the form from reloading the page
@@ -58,13 +58,13 @@
     const searchQuery = document.getElementById('searchQuery').value;
 
     // Use a CORS proxy to avoid CORS issues
-    const corsProxy = '';
+    const corsProxy = 'https://corsanywhere.herokuapp.com/';
     
     // https://cors-anywhere.herokuapp.com/
     // Send the GET request to the Willy Weather API
     fetch(
       corsProxy +
-        `https://api.willyweather.com.au/v2/${apiKey}/search.json?query=${searchQuery}`,
+        `api.willyweather.com.au/v2/${apiKey}/search.json?query=${searchQuery}`,
     )
       .then(response => response.json()) // Parse the response as JSON
       .then(data => {
