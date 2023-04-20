@@ -10,7 +10,10 @@
 </head>
 <body>
 
-<h1>WillyWeather Location Search Page</h1>
+<h1>WillyWeather Location Search Page</h1><br>
+<h2>Last Updated: 20 April 2023</h2><br>
+<h3>Updated CORS Server</h3>
+
 <br>
 <p>Use your WillyWeather API key to search the WillyWeather database for locations. Find the location you are after using the information provided, and enter it's <b>Location ID</b> from the table below to set up your location banks in the Garmin/Connect IQ <i>OzTides</i> application, available <a href="https://apps.garmin.com/en-US/apps/a3d9959a-4e18-4443-8663-f1a6087c3ab9">here</a>.
 This page relies on a third party service CORS proxy to format headers, and as such, this page may not work from time-to-time. If it is broken, or you are able to fix this issue, please let me know by emailing me through the 'Contact Developer' link in Connect IQ store or dropping me an email.
@@ -72,7 +75,7 @@ Matt, mthurtell[at]live.com.au
     const searchQuery = document.getElementById('searchQuery').value;
 
     // Use a CORS proxy to avoid CORS issues
-    const corsProxy = 'https://corsanywhere.herokuapp.com/';
+    const corsProxy = 'https://cors-proxy.fringe.zone/';
     
     // https://cors-anywhere.herokuapp.com/
     // Send the GET request to the Willy Weather API
