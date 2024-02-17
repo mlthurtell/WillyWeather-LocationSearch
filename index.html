@@ -11,22 +11,24 @@
 <body>
 
 <h1>WillyWeather Location Search Page</h1><br>
-<h2>Last Updated: 20 April 2023</h2><br>
-- Updated CORS Server
+<h2>Last Updated: 17 February 2024</h2><br>
+- Added 'help' for people with issues loading
 - Tested working
 
 <br>
-<p>Use your WillyWeather API key to search the WillyWeather database for locations. Find the location you are after using the information provided, and enter it's <b>Location ID</b> from the table below to set up your location banks in the Garmin/Connect IQ <i>OzTides</i> application, available <a href="https://apps.garmin.com/en-US/apps/a3d9959a-4e18-4443-8663-f1a6087c3ab9">here</a>.
-This page relies on a third party service CORS proxy to format headers, and as such, this page may not work from time-to-time. If it is broken, or you are able to fix this issue, please let me know by emailing me through the 'Contact Developer' link in Connect IQ store or dropping me an email.
+<p>Use your WillyWeather API key to search the WillyWeather database for locations. Find the location you are after using the information provided in the table, and enter your location's <b>Location ID</b> from the table below to set up your location banks in the Garmin/Connect IQ <i>OzTides</i> application, available <a href="https://apps.garmin.com/en-US/apps/a3d9959a-4e18-4443-8663-f1a6087c3ab9">here</a>.
+<br> 
+If the page appears to load continuously whilst search locations, usually the culprit is WillyWeather and their billing. Re-entering credit card info usually sorts it out. If you are <b>STILL</b>This page relies on a third party service CORS proxy to format HTML headers, and as such, may not work from time-to-time. If it is broken, or you are able to fix this issue permanently by providing a proxy, please let me know by emailing me through the 'Contact Developer' link in Connect IQ store or dropping me an email.
 <br>
 <br>
 Cheers,<br>
 Matt, mthurtell[at]live.com.au
+<a href="https://www.mltindustries.com.au">MLT Industries</a>
 </p>
 
 <!-- Use Bootstrap styling for the form and table -->
 <form id="form" class="form-inline">
-  <label class="mr-sm-2" for="apiKey">API Key:</label>
+  <label class="mr-sm-2" for="apiKey">API Key<b>Note: CaSe-SENsiTIvE</b></label>
   <input type="text" class="form-control mb-2 mr-sm-2" id="apiKey" />
   <label class="mr-sm-2" for="searchQuery">Location Name:</label>
   <input type="text" class="form-control mb-2 mr-sm-2" id="searchQuery" />
