@@ -31,8 +31,8 @@ Matt, mthurtell[at]live.com.au<br>
 
 <!-- Use Bootstrap styling for the form and table -->
 <form id="form" class="form-inline">
-  <!-- <label class="mr-sm-2" for="apiKey">API Key (Note this is <b>CaSE-seNSiTIvE</b>):</label> -->
-  <!--<input type="text" class="form-control mb-2 mr-sm-2" id="apiKey" /> -->
+  <label class="mr-sm-2" for="apiKey">API Key (Note this is <b>CaSE-seNSiTIvE</b>):</label>
+  <input type="text" class="form-control mb-2 mr-sm-2" id="apiKey" />
   <label class="mr-sm-2" for="searchQuery">Location Name:</label>
   <input type="text" class="form-control mb-2 mr-sm-2" id="searchQuery" />
   <button type="submit" class="btn btn-primary mb-2">Submit</button>
@@ -74,8 +74,8 @@ Matt, mthurtell[at]live.com.au<br>
     document.getElementById('loading').style.display = 'block';
 
     // Get the API key and search query from the form
-    //const apiKey = document.getElementById('apiKey').value;
-    const apiKey = "NmYwZmFkNjYyZWEzZmI0MTFjMjJjMT";
+    const apiKey = document.getElementById('apiKey').value;
+    // const apiKey = "NmYwZmFkNjYyZWEzZmI0MTFjMjJjMT";
     const searchQuery = document.getElementById('searchQuery').value;
 
     // Use a CORS proxy to avoid CORS issues
