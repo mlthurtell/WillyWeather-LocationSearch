@@ -74,18 +74,18 @@ Matt, mthurtell[at]live.com.au<br>
     document.getElementById('loading').style.display = 'block';
 
     // Get the API key and search query from the form
-    const apiKey = document.getElementById('apiKey').value;
-    // const apiKey = "NmYwZmFkNjYyZWEzZmI0MTFjMjJjMT";
+    //const apiKey = document.getElementById('apiKey').value;
+    const apiKey = "NmYwZmFkNjYyZWEzZmI0MTFjMjJjMT";
     const searchQuery = document.getElementById('searchQuery').value;
 
     // Use a CORS proxy to avoid CORS issues
-    const corsProxy = 'https://cors-proxy.fringe.zone/';
+    const corsProxy = 'https://corsproxy.io/?';
     // https://cors-proxy.fringe.zone/
     // https://cors-anywhere.herokuapp.com/
     // Send the GET request to the Willy Weather API
     fetch(
       corsProxy +
-        `api.willyweather.com.au/v2/${apiKey}/search.json?query=${searchQuery}`,
+        `https://api.willyweather.com.au/v2/${apiKey}/search.json?query=${searchQuery}`,
     )
       .then(response => response.json()) // Parse the response as JSON
       .then(data => {
