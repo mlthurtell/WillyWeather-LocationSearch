@@ -11,17 +11,15 @@
 <body>
 
 <h1>WillyWeather Location Search Page</h1><br>
-<h2>Last Updated: 17 February 2024</h2><br>
+<h2>Last Updated: 25 September 2024</h2><br>
 - Added 'help' for people with issues loading<br>
 - Tested page fully working<br>
 <br>
-<p>Use your WillyWeather API key to search the WillyWeather database for locations. Find the location you are after using the information provided in the table, and enter your location's <b>Location ID</b> from the table below to set up your location banks in the Garmin/Connect IQ <i>OzTides</i> application, available <a href="https://apps.garmin.com/en-US/apps/a3d9959a-4e18-4443-8663-f1a6087c3ab9">here</a>. <br>
+<p>Use this page to search the WillyWeather database for locations. Find the location you are after using the information provided in the table, and enter your location's <b>Location ID</b> from the table below into your location banks in the Garmin/Connect IQ <i>OzTides</i> application, available <a href="https://apps.garmin.com/en-US/apps/a3d9959a-4e18-4443-8663-f1a6087c3ab9">here</a>. <br>
 <br> 
-If the page appears to load continuously whilst searching locations, usually the culprit is WillyWeather and their billing. Re-entering your credit card info will sort it out. If you are <b>STILL</b> having issues, this page relies on a third party service CORS proxy (out of my control) to format HTML headers, which may be down. If it is broken, or you are able to fix this issue permanently by providing a proxy, please let me know by emailing me through the 'Contact Developer' link in Connect IQ store or dropping me an email.
+If you're having issues, this page relies on a third party service CORS proxy (out of my control) to format HTML headers, which may be down. If it is broken, please drop me an email or let me know through the contact developer link on the Garmin App page. If you are able to fix this issue permanently by providing a proxy, please let me know, it'd be much appreciated.
 <br>
-<br>
-A shitload of time and effort goes into making apps like these and the supporting infrastructure to go with it, especially for free, so at the very least please leave me a review on the ConnectIQ site. <br><br>
-If you're super keen, you can sling me a few bucks for a beer via my PayPal - https://www.paypal.me/mlthurtell, or check out my ACTUAL business - <a href="https://www.mltindustries.com.au">MLT Industries</a>, we make electronics for 4WDs, caravans, boats and other recreational vehicles. <br>
+Into boating/fishing/4WD'ing? Check out my actual business - <a href="https://www.mltindustries.com.au">MLT Industries</a>, we make bluetooth connected electronics and other accessories for 4WDs, caravans, boats and other recreational vehicles. <br>
 <br>
 Cheers,<br>
 Matt, mthurtell[at]live.com.au<br>
@@ -76,7 +74,8 @@ Matt, mthurtell[at]live.com.au<br>
     document.getElementById('loading').style.display = 'block';
 
     // Get the API key and search query from the form
-    const apiKey = document.getElementById('apiKey').value;
+    //const apiKey = document.getElementById('apiKey').value;
+    const apiKey = 'NmYwZmFkNjYyZWEzZmI0MTFjMjJjMT';
     const searchQuery = document.getElementById('searchQuery').value;
 
     // Use a CORS proxy to avoid CORS issues
