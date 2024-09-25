@@ -12,7 +12,8 @@
 
 <h1>WillyWeather Location Search Page</h1><br>
 <h2>Last Updated: 25 September 2024</h2><br>
-- Added 'help' for people with issues loading<br>
+- Removed API textbox as this app is now <b>PAID</b><br>
+- Updated 'help' for people with issues loading<br>
 - Tested page fully working<br>
 <br>
 <p>Use this page to search the WillyWeather database for locations. Find the location you are after using the information provided in the table, and enter your location's <b>Location ID</b> from the table below into your location banks in the Garmin/Connect IQ <i>OzTides</i> application, available <a href="https://apps.garmin.com/en-US/apps/a3d9959a-4e18-4443-8663-f1a6087c3ab9">here</a>. <br>
@@ -28,15 +29,12 @@ Matt, mthurtell[at]live.com.au<br>
 
 <!-- Use Bootstrap styling for the form and table -->
 <form id="form" class="form-inline">
-  <label class="mr-sm-2" for="apiKey">API Key (Note this is <b>CaSE-seNSiTIvE</b>):</label>
-  <input type="text" class="form-control mb-2 mr-sm-2" id="apiKey" />
+  <!-- <label class="mr-sm-2" for="apiKey">API Key (Note this is <b>CaSE-seNSiTIvE</b>):</label> -->
+  <!--<input type="text" class="form-control mb-2 mr-sm-2" id="apiKey" /> -->
   <label class="mr-sm-2" for="searchQuery">Location Name:</label>
   <input type="text" class="form-control mb-2 mr-sm-2" id="searchQuery" />
   <button type="submit" class="btn btn-primary mb-2">Submit</button>
 </form>
-
-<br />
-
 <table id="resultsTable" class="table">
   <thead>
     <tr>
@@ -75,7 +73,7 @@ Matt, mthurtell[at]live.com.au<br>
 
     // Get the API key and search query from the form
     //const apiKey = document.getElementById('apiKey').value;
-    const apiKey = 'NmYwZmFkNjYyZWEzZmI0MTFjMjJjMT';
+    const apiKey = "NmYwZmFkNjYyZWEzZmI0MTFjMjJjMT";
     const searchQuery = document.getElementById('searchQuery').value;
 
     // Use a CORS proxy to avoid CORS issues
