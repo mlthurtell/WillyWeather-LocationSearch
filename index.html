@@ -89,10 +89,16 @@ Matt, mthurtell[at]live.com.au<br>
     )
       .then(response => response.json()) // Parse the response as JSON
       .then(data => {
-        // Display the results in the table
-        console.log(data);
-        // Display the data in the table
-        data.forEach(item => {
+      // Display the results in the table
+      console.log(data);
+      
+      // Define allowed Type IDs
+      const allowedTypeIds = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19];
+
+      // Filter and display the data in the table
+      data
+        .filter(item => allowedTypeIds.includes(item.typeId))
+        .forEach(item => {
           const row = resultsTable.insertRow();
           row.insertCell().innerHTML = item.id;
           row.insertCell().innerHTML = item.name;
@@ -105,9 +111,9 @@ Matt, mthurtell[at]live.com.au<br>
           row.insertCell().innerHTML = item.typeId;
         });
 
-        // Hide the loading animation
-        document.getElementById('loading').style.display = 'none';
-      });
+      // Hide the loading animation
+      document.getElementById('loading').style.display = 'none';
+    });
   });
 </script>
 <h1>Help and General Info</h1><br>
@@ -132,6 +138,8 @@ As of V3.0.0, watches with more screen real estate will now give tidal estimates
 <h5>To Do</h5>
 - Improve graphs to also reflect estimate tidal speed at a glance<br>
 - On start-up, search for today's tide in the cache and display it automatically<br>
+- Improve user messaging/error handling to give more information<br>
+- Improve screen layout for smaller devices
 <br>
 <h5>Requests</h5>
 Got a sweet idea or think something could be done better? Shoot me a message.<br>
