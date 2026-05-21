@@ -6,29 +6,55 @@
   crossorigin="anonymous"
 />
 
-<title>WillyWeather - Location ID Search</title>
-</head>
 <body>
+<div class="container mt-4 mb-5">
 
-<h1>WillyWeather Location Search Page</h1><br>
-<h2>Last Updated: 02 April 2026</h2><br>
-- Fixed CORS Proxy, tested fully working<br>
+<h1>WillyWeather Location Search Page</h1>
+<h2>Last Updated: 21 May 2026</h2>
 
-<h3>Scroll down for more help on how to use the app</h3>
+<p>
+  <strong>Update:</strong><br>
+  - Retired third-party CORS proxy dependency<br>
+  - Moved to a locally hosted tidal location database for improved reliability and speed<br>
+  - Added a manual fallback method for finding Location IDs directly from WillyWeather page source
+</p>
 
-<br>
-<p>Use this page to search the WillyWeather database for locations. Find the location you are after using the information provided in the table, and enter your location's <b>Location ID</b> from the table below into your location banks in the Garmin/Connect IQ <i>OzTides</i> application, available <a href="https://apps.garmin.com/en-US/apps/a3d9959a-4e18-4443-8663-f1a6087c3ab9">here</a>. <br>
-<br> 
-If you're having issues, this page relies on a third party service CORS proxy (out of my control) to format HTML headers, which may be down. If it is broken, please drop me an email or let me know through the contact developer link on the Garmin App page. If you are able to fix this issue permanently by providing a proxy, please let me know, it'd be much appreciated.
-<br>
-<br>
-Into boating/fishing/4WD'ing? Check out my actual business - <a href="https://www.mltindustries.com.au">MLT Industries</a>, we make bluetooth connected electronics and other accessories for 4WDs, caravans, boats and other recreational vehicles. <br>
-<br>
+<h3>Quick Navigation</h3>
+<p>
+  <a href="#searchhelp">Location Search</a><br>
+  <a href="#manualhelp">Manual Location ID Method</a><br>
+  <a href="#setuphelp">Setting Your Locations</a><br>
+  <a href="#watchhelp">Using Your Watch</a><br>
+  <a href="#generalinfo">General Info</a>
+</p>
+
+<hr>
+
+<p>
+Use this page to find the WillyWeather <b>Location ID</b> for your preferred tidal location. Once found, enter the Location ID into one of your location banks in the Garmin/Connect IQ <i>OzTides</i> application, available <a href="https://apps.garmin.com/en-US/apps/a3d9959a-4e18-4443-8663-f1a6087c3ab9">here</a>.
+</p>
+
+<p>
+The search now uses a locally hosted database of tidal-capable WillyWeather locations. This avoids unreliable third-party CORS proxies, improves page speed, and reduces unnecessary API load against WillyWeather's services.
+</p>
+
+<p>
+The vast majority of tidal locations should be available here. Some niche or remote locations may still be missing, particularly locations without postcode associations. If your location is missing, use the <a href="#manualhelp">Manual Location ID Method</a> below or contact me via email / Garmin Contact Developer.
+</p>
+
+<p>
+Into boating/fishing/4WD'ing? Check out my actual business - <a href="https://www.mltindustries.com.au">MLT Industries</a>, we make bluetooth connected electronics and other accessories for 4WDs, caravans, boats and other recreational vehicles.
+</p>
+
+<p>
 Cheers,<br>
 Matt, mthurtell[at]live.com.au<br>
 <a href="https://www.mltindustries.com.au">MLT Industries</a>
 </p>
-</body>
+
+<hr>
+
+<h2 id="searchhelp">Location Search</h2>
 
 <!-- Use Bootstrap styling for the form and table -->
 <form id="form" class="form-inline">
@@ -62,76 +88,195 @@ Matt, mthurtell[at]live.com.au<br>
   </div>
 </div>
 
-<!-- JavaScript to send the GET request and display the results -->
+<!-- JavaScript to search the local WillyWeather tidal location cache -->
 <script>
-  // Send the GET request when the form is submitted
-  document.getElementById('form').addEventListener('submit', function (event) {
-    event.preventDefault(); // Prevent the form from reloading the page
+  // Local static cache file.
+  // Put tidal-locs.json in the same folder as this HTML file on GitHub Pages.
+  const tidalLocationsCacheUrl = new URL('./tidal-locs.json', window.location.href);
 
+  let tidalLocationsCache = null;
+
+  async function loadTidalLocations() {
+    if (tidalLocationsCache) {
+      return tidalLocationsCache;
+    }
+
+    console.log('[LOCATIONS] Loading local tidal location cache...');
+
+    const response = await fetch(tidalLocationsCacheUrl, {
+      cache: 'force-cache'
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to load tidal-locs.json. HTTP ${response.status}`);
+    }
+
+    tidalLocationsCache = await response.json();
+
+    console.log(`[LOCATIONS] Cache loaded. Records=${tidalLocationsCache.length}`);
+
+    return tidalLocationsCache;
+  }
+
+  function normaliseSearchValue(value) {
+    return String(value ?? '').trim().toLowerCase();
+  }
+
+  function searchTidalLocations(locations, query) {
+    const q = normaliseSearchValue(query);
+
+    if (!q) {
+      return [];
+    }
+
+    return locations
+      .filter(item => {
+        return (
+          normaliseSearchValue(item.id).includes(q) ||
+          normaliseSearchValue(item.name).includes(q) ||
+          normaliseSearchValue(item.region).includes(q) ||
+          normaliseSearchValue(item.state).includes(q) ||
+          normaliseSearchValue(item.postcode).includes(q)
+        );
+      })
+      .sort((a, b) => {
+        const aName = normaliseSearchValue(a.name);
+        const bName = normaliseSearchValue(b.name);
+        const aPostcode = normaliseSearchValue(a.postcode);
+        const bPostcode = normaliseSearchValue(b.postcode);
+        const aState = normaliseSearchValue(a.state);
+        const bState = normaliseSearchValue(b.state);
+
+        // Exact name matches first
+        if (aName === q && bName !== q) return -1;
+        if (bName === q && aName !== q) return 1;
+
+        // Name starts-with matches next
+        if (aName.startsWith(q) && !bName.startsWith(q)) return -1;
+        if (bName.startsWith(q) && !aName.startsWith(q)) return 1;
+
+        // Exact postcode matches next
+        if (aPostcode === q && bPostcode !== q) return -1;
+        if (bPostcode === q && aPostcode !== q) return 1;
+
+        // Then state/name/postcode stable sorting
+        const stateCompare = aState.localeCompare(bState);
+        if (stateCompare !== 0) return stateCompare;
+
+        const nameCompare = aName.localeCompare(bName);
+        if (nameCompare !== 0) return nameCompare;
+
+        return aPostcode.localeCompare(bPostcode);
+      });
+  }
+
+  function clearResultsTable() {
     const resultsTable = document.getElementById('resultsTable').tBodies[0];
     resultsTable.innerHTML = '';
+    return resultsTable;
+  }
 
-    // Display the loading animation
-    document.getElementById('loading').style.display = 'block';
+  function addResultsMessage(resultsTable, message) {
+    const row = resultsTable.insertRow();
+    const cell = row.insertCell();
+    cell.colSpan = 9;
+    cell.textContent = message;
+  }
 
-    // Get the API key and search query from the form
-    //const apiKey = document.getElementById('apiKey').value;
-    const apiKey = "NmYwZmFkNjYyZWEzZmI0MTFjMjJjMT";
+  function addLocationRow(resultsTable, item) {
+    const row = resultsTable.insertRow();
+
+    row.insertCell().textContent = item.id;
+    row.insertCell().textContent = item.name;
+    row.insertCell().textContent = item.region;
+    row.insertCell().textContent = item.state;
+    row.insertCell().textContent = item.postcode;
+    row.insertCell().textContent = item.timeZone;
+    row.insertCell().textContent = item.lat;
+    row.insertCell().textContent = item.lng;
+    row.insertCell().textContent = item.typeId;
+  }
+
+  // Search the local cache when the form is submitted.
+  document.getElementById('form').addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const resultsTable = clearResultsTable();
+    const loading = document.getElementById('loading');
     const searchQuery = document.getElementById('searchQuery').value;
 
-    // Use a CORS proxy to avoid CORS issues
-    const corsProxy = 'https://api.cors.lol/?url=';
-    
-    // https://cors-proxy.fringe.zone/
-    // https://corsproxy.io/?
-    // https://cors-anywhere.herokuapp.com/
-    // https://cors-anywhere.com/
-    // https://corsproxy.io/?url=
-    // Send the GET request to the Willy Weather API
-    fetch(
-      corsProxy +
-        `https://api.willyweather.com.au/v2/${apiKey}/search.json?query=${searchQuery}`,
-    )
-      .then(response => response.json()) // Parse the response as JSON
-      .then(data => {
-      // Display the results in the table
-      console.log(data);
-      
-      // Define allowed Type IDs
-      const allowedTypeIds = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19];
+    loading.style.display = 'block';
 
-      // Filter and display the data in the table
-      data
-        .filter(item => allowedTypeIds.includes(item.typeId))
-        .forEach(item => {
-          const row = resultsTable.insertRow();
-          row.insertCell().innerHTML = item.id;
-          row.insertCell().innerHTML = item.name;
-          row.insertCell().innerHTML = item.region;
-          row.insertCell().innerHTML = item.state;
-          row.insertCell().innerHTML = item.postcode;
-          row.insertCell().innerHTML = item.timeZone;
-          row.insertCell().innerHTML = item.lat;
-          row.insertCell().innerHTML = item.lng;
-          row.insertCell().innerHTML = item.typeId;
-        });
+    try {
+      const locations = await loadTidalLocations();
+      const results = searchTidalLocations(locations, searchQuery);
 
-      // Hide the loading animation
-      document.getElementById('loading').style.display = 'none';
-    });
+      console.log(`[SEARCH] Query="${searchQuery}" Results=${results.length}`);
+
+      if (results.length === 0) {
+        addResultsMessage(resultsTable, 'No matching tidal locations found.');
+        return;
+      }
+
+      results.forEach(item => addLocationRow(resultsTable, item));
+    } catch (err) {
+      console.error('[ERROR] Location search failed:', err);
+      addResultsMessage(resultsTable, 'Could not load local location cache. Make sure tidal-locs.json is uploaded beside this page.');
+    } finally {
+      loading.style.display = 'none';
+    }
   });
 </script>
 
 <hr>
-<h3>Setting Your locations</h3>
+
+<h2 id="manualhelp">Manual Location ID Method</h2>
+
+<p>
+If the search tool does not show your location, you may still be able to find the Location ID directly from the WillyWeather website.
+</p>
+
+<ol>
+  <li>Open the location on the WillyWeather website.</li>
+  <li>Right click the page and select <b>View Page Source</b>.</li>
+  <li>Search the page source for <b>ww.location</b>.</li>
+  <li>Find the numeric value in the <b>id</b> field.</li>
+  <li>Enter that number into OzTides as your Location ID.</li>
+</ol>
+
+<div class="card bg-light mb-3">
+  <div class="card-body">
+<pre class="mb-0">
+ww.location = {
+  "id":18744,
+  "name":"Mary River-Shady Camp Barrage"
+}
+</pre>
+  </div>
+</div>
+
+<p>
+In the example above, the Location ID is <b>18744</b>.
+</p>
+
+<div class="text-center mb-3">
+  <a href="viewsource.png" target="_blank">
+    <img src="viewsource.png" class="img-fluid" alt="View Source Example" style="max-height: 450px;">
+  </a>
+</div>
+
+<hr>
+
+<h2 id="setuphelp">Setting Your Locations</h2>
+
 <div class="row">
   <div class="col-md-6 text-center mb-3">
     <a href="Garmin_SearchPage.png" target="_blank">
       <img src="Garmin_SearchPage.png" class="img-fluid" alt="Garmin Search Page" style="max-height: 250px;">
     </a>
-    <p><strong>Search Page:</strong><br>
-      Type your location in the box and hit Search.<br>
-      Find the <b>Location ID</b> for your spot.
+    <p>
+      <strong>Search Page:</strong><br>
+      Search for your location above and copy the <b>Location ID</b> from the results table.
     </p>
   </div>
 
@@ -139,19 +284,19 @@ Matt, mthurtell[at]live.com.au<br>
     <a href="connect_iq.png" target="_blank">
       <img src="connect_iq.png" class="img-fluid" alt="Connect IQ Setup" style="max-height: 250px;">
     </a>
-    <p><strong>Connect IQ Setup:</strong><br>
-      Enter your Location ID into one of the <b>Location ID</b> fields in the app settings.<br>
-      Then, go to the menu on your watch and select <b>Refresh</b>.
+    <p>
+      <strong>Connect IQ Setup:</strong><br>
+      Enter the Location ID into one of the <b>Location ID</b> fields in the app settings, then open the app menu on your watch and select <b>Refresh</b>.
     </p>
   </div>
 </div>
 
 <hr>
-<h3>Using Your Watch</h3>
+
+<h2 id="watchhelp">Using Your Watch</h2>
+
 <p>
-  Most watches follow the layout shown below (this example is from an Epix Pro Gen 2).  
-  If these controls don’t match your watch or you need more help, visit the Garmin support page  
-  <a href="https://support.garmin.com/en-AU/" target="_blank">here</a>.
+Most watches follow the layout shown below. This example is from an Epix Pro Gen 2. If your watch controls differ, check the Garmin support page <a href="https://support.garmin.com/en-AU/" target="_blank">here</a>.
 </p>
 
 <div class="row">
@@ -159,7 +304,8 @@ Matt, mthurtell[at]live.com.au<br>
     <a href="watch_buttons.png" target="_blank">
       <img src="watch_buttons.png" class="img-fluid" alt="Watch buttons" style="max-height: 250px;">
     </a>
-    <p><strong>Watch Buttons:</strong><br>
+    <p>
+      <strong>Watch Buttons:</strong><br>
       Red = Menu<br>
       Green = Select
     </p>
@@ -169,39 +315,52 @@ Matt, mthurtell[at]live.com.au<br>
     <a href="watch_menu.png" target="_blank">
       <img src="watch_menu.png" class="img-fluid" alt="Watch menu" style="max-height: 250px;">
     </a>
-    <p><strong>Watch Menu:</strong><br>
-      Use up/down or scroll with touch to change location.<br>
-      Select <em>Refresh</em> to fetch new data.<br>
-      Press <em>Select</em> to confirm.
+    <p>
+      <strong>Watch Menu:</strong><br>
+      Use up/down or touch scroll to change location. Select <b>Refresh</b> to fetch new tide data.
     </p>
   </div>
 </div>
 
-<h1>Help and General Info</h1><br>
+<hr>
+
+<h1 id="generalinfo">Help and General Info</h1>
+
 <h5>Payment</h5>
-I’ve made the decision to move this app from a free model to a paid one to provide a more seamless and reliable experience for users. I offer a no-holds barred, 24 hour trial of the app during which time you ahave access to all functionality.<br>
-This change helps me to address common issues such as obtaining a WillyWeather API key and streamline the overall setup process as I was spending tonnes of time helping people out.<br>
-<br>
-This app uses KiezelPay for payment processing, a well-known service in the Garmin and Fitbit community. It is secure, PCI-compliant and is pretty quick and painless. Certainly less painless than obtaining a WillyWeather API Key.<br> 
-If you're not keen on using this, please contact me directly and we can work something out.<br>
-<br>
+<p>
+OzTides now uses a paid model to keep the app reliable and sustainable. A full 24-hour trial is available so you can test the app properly before paying.
+</p>
+
+<p>
+Payment is handled through KiezelPay, a common payment platform used in the Garmin and Fitbit app communities. If KiezelPay does not work for you, contact me directly and we can work something out.
+</p>
+
 <h5>Graphing</h5>
-Tides are now graphed in 2 areas: <br>
-- Left hand side - time <br>
-- Right hand side - tide height <br>
-<br>
-<h5>Rule of Twelfths</body></h5>
-As of V3.0.0, watches with more screen real estate will now give tidal estimates based on the "Rule of Twelfths". This is exactly as it sounds - an estimate. See <i>Wikipedia: Rule of Twelfths</i> for more info <a href="https://en.wikipedia.org/wiki/Rule_of_twelfths#Tides">here</a><br>
-- The rule is a rough approximation only and should be applied with great caution when used for navigational purposes. Officially produced tide tables should be used in preference whenever possible.<br>
-- The rule assumes that all tides behave in a regular manner, this is not true of some geographical locations.<br>
-- The rule assumes that the period between high and low tides is six hours but this is an underestimate and can vary anyway<br>
-<br>
+<p>
+Tide graphs show time on the left-hand side and tide height on the right-hand side.
+</p>
+
+<h5>Rule of Twelfths</h5>
+<p>
+As of V3.0.0, watches with more screen space can show tidal estimates using the "Rule of Twelfths". This is an estimate only and should not be relied on for navigation.
+</p>
+
+<p>
+Official tide tables should always be used where safety or navigation is involved. The rule assumes regular tidal behaviour and a roughly six-hour period between high and low tide, which is not always accurate.
+</p>
+
 <h5>To Do</h5>
-- Improve graphs to also reflect estimate tidal speed at a glance<br>
+<p>
+- Improve graphs to show estimated tidal speed at a glance<br>
 - On start-up, search for today's tide in the cache and display it automatically<br>
-- Improve user messaging/error handling to give more information<br>
+- Improve user messaging and error handling<br>
 - Improve screen layout for smaller devices
-<br>
+</p>
+
 <h5>Requests</h5>
-Got a sweet idea or think something could be done better? Shoot me a message.<br>
-<br>
+<p>
+Got a useful idea or think something could be improved? Shoot me a message.
+</p>
+
+</div>
+</body>
